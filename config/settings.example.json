@@ -1,0 +1,8 @@
+{
+  "time_to_track": {"hours":  12},
+  "upload_window": {"minutes":  5},
+  "reply_delete_threshold": -2,
+  "subreddit": "soccer",
+  "link_flair_names": ["Media", "Post Match Thread"],
+  "praw_user_agent": "SoccerHelper1.0"
+}

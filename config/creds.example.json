@@ -1,0 +1,8 @@
+{
+  "streamable_username": "me@example.com",
+  "streamable_password": "mypassword",
+  "reddit_username": "MyHandle",
+  "reddit_password": "mypassword",
+  "reddit_client_id": "something",
+  "reddit_client_secret": "very_secret"
+}
