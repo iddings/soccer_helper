@@ -75,10 +75,11 @@ class SubmissionTracker:
 
             if reply_lines:
 
-                reply_lines.append("/u/{} please stop using sites with pre-roll ads.".format(comment.author))
+                #  Disabling the mention for now
+                #  reply_lines.append("/u/{} please stop using sites with pre-roll ads.".format(comment.author))
                 reply_lines.append("*****")
                 reply_lines.append("*This action was performed automatically to improve the quality of /r/soccer.*")
-                reply_lines.append("*Downvote this if the bot messed up and it will be deleted.*")
+                reply_lines.append("*Downvote this and it will be deleted.*")
 
                 reply_body = "\n\n".join(reply_lines)
 
