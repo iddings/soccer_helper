@@ -1,5 +1,6 @@
 import re
 from datetime import datetime
+from logging import Logger, getLogger
 from time import sleep
 from typing import List
 from urllib.parse import urlsplit
@@ -13,6 +14,8 @@ from soccer_helper.models import TrackedSubmission, TrackedComment, Mirror
 from soccer_helper.util import make_permalink
 
 AUTO_MODERATOR = 'AutoModerator'
+
+log: Logger = getLogger(__name__)
 
 
 class SubmissionTracker:
@@ -86,13 +89,13 @@ class SubmissionTracker:
                 if reply:
                     praw_reply: Comment = self._context.reddit.comment(reply.related_comment_id)
                     if praw_reply.score < self._context.config.reply_delete_threshold:
-                        print("deleting " + make_permalink(praw_reply))
+                        log.info("deleting " + make_permalink(praw_reply))
                         praw_reply.delete()
                     if praw_reply.body != reply_body:
-                        print("updating " + make_permalink(praw_reply))
+                        log.info("updating " + make_permalink(praw_reply))
                         praw_reply.edit(reply_body)
                 else:
-                    print("replying to " + make_permalink(comment))
+                    log.info("replying to " + make_permalink(comment))
                     try:
                         reply_comment: Comment = comment.parent().reply(reply_body)
                         session.add(TrackedComment(
@@ -101,15 +104,18 @@ class SubmissionTracker:
                             track_until=datetime.now() + self._context.config.time_to_track
                         ))
                     except APIException as e:
-                        print("probably rate limited.", e.message)
+                        log.info(f"api exception: {e.message}")
                         match = re.match(r'you are doing that too much\. try again in (\d+) (.*?)\.', e.message)
                         if match:
                             quantity = int(match.group(1))
-                            multiplier = {"seconds": 1, "minutes": 60}[match.group(2)]
-                            delay = (quantity * multiplier) + 60
-                            print(f"waiting {delay} seconds.")
+                            multipliers = {"seconds": 1, "minutes": 60}
+                            if match.group(2) in multipliers:
+                                delay = (quantity * multipliers[match.group(2)]) + 60
+                            else:
+                                delay = 60*10
+                            log.info(f"waiting {delay} seconds.")
                             sleep(delay)
-                            print("resuming.")
+                            log.info("resuming.")
 
 
 class Link:

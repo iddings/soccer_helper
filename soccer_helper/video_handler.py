@@ -1,6 +1,7 @@
 import json
 import re
 from datetime import datetime
+from logging import Logger, getLogger
 from multiprocessing.pool import Pool
 from time import sleep
 
@@ -8,6 +9,8 @@ import requests
 
 from soccer_helper import Context
 from soccer_helper.models import Mirror
+
+log: Logger = getLogger(__name__)
 
 
 class VideoHandler:
@@ -51,7 +54,7 @@ class VideoHandler:
 
             assert mirror
 
-            print('attempting to get ' + url)
+            log.info('attempting to get ' + url)
 
             dm_code = re.search(r'dailymotion.com/video/(.*?)$', url, flags=re.IGNORECASE).group(1)
 
@@ -83,7 +86,7 @@ class VideoHandler:
                                 bad_video = i['url']
 
                     else:
-                        print('skipping due to old video.')
+                        log.info('skipping due to old video.')
 
             if not bad_video:
                 mirror.skip = True
@@ -92,11 +95,11 @@ class VideoHandler:
 
             api_url = "https://api.streamable.com/upload"
 
-            print('getting ' + bad_video)
+            log.info('getting ' + bad_video)
 
             video = requests.get(bad_video).content
 
-            print('uploading...')
+            log.info('uploading...')
 
             res = requests.post(
                 api_url,

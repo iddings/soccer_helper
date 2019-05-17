@@ -1,10 +1,8 @@
 from contextlib import contextmanager
-from datetime import datetime
 from logging import Logger, getLogger
-from typing import Type, Iterable, List, Set, Union
+from typing import Type, Set
 
 from praw import Reddit
-from praw.models import Submission
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
 
