@@ -104,7 +104,7 @@ class SubmissionTracker:
                             track_until=datetime.now() + self._context.config.time_to_track
                         ))
                     except APIException as e:
-                        log.info(f"api exception: {e.message}")
+                        log.exception('API Exception')
                         match = re.match(r'you are doing that too much\. try again in (\d+) (.*?)\.', e.message)
                         if match:
                             quantity = int(match.group(1))
@@ -113,7 +113,7 @@ class SubmissionTracker:
                                 delay = (quantity * multipliers[match.group(2)]) + 60
                             else:
                                 delay = 60*10
-                            log.info(f"waiting {delay} seconds.")
+                            log.warn(f"Rate Limited: waiting {delay} seconds.")
                             sleep(delay)
                             log.info("resuming.")
 

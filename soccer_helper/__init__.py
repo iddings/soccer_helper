@@ -1,6 +1,5 @@
 from multiprocessing import Process
 import logging
-import signal
 
 from soccer_helper.submission_tracker import SubmissionTracker
 from soccer_helper.config import Config
@@ -18,7 +17,6 @@ handler.setFormatter(
     )
 )
 root.addHandler(handler)
-root.setLevel(logging.INFO)
 
 
 class SoccerHelper:
