@@ -45,7 +45,7 @@ class SubmissionTracker:
                                 break
 
                     if sub.related_comment_id:
-                        log.info(f"checking https://reddit.com/r/{self._context.config.subreddit}/{sub.id}")
+                        #log.info(f"checking https://reddit.com/r/{self._context.config.subreddit}/{sub.id}")
                         self.poll_automod_comment(session, sub)
 
             sleep(1)
@@ -70,7 +70,7 @@ class SubmissionTracker:
                         reply_lines.append(
                             f"**[{title} - Mirror (No Pre-Roll Ads)]({existing_mirror.mirror_url})**"
                         )
-                    else:
+                    elif not existing_mirror or not existing_mirror.skip:
                         reply_lines.append(f"*{title} - Generating Mirror*")
                         if not existing_mirror:
                             session.add(Mirror(
