@@ -56,13 +56,14 @@ class SubmissionTracker:
 
         for comment in automod_comment.replies:  # type: Comment
 
+            log.info(make_permalink(comment))
+
             reply: TrackedComment = session.query(TrackedComment).filter_by(fullname=comment.fullname).first()
 
             links: List[Link] = Link.from_comment_body(comment.body)
             reply_lines = []
 
             for link in links:
-                log.info(f"{link.url}")
                 if link.is_mirrorable:
                     existing_mirror: Mirror = session.query(Mirror).filter_by(original_url=link.url).first()
                     title = link.text.replace("*", "")
