@@ -1,5 +1,6 @@
 from multiprocessing import Process
 import logging
+from time import sleep
 from typing import Dict
 
 from soccer_helper.submission_tracker import SubmissionTracker
@@ -56,3 +57,6 @@ class SoccerHelper:
             except KeyboardInterrupt:
                 log.info('exiting.')
                 break
+
+            else:
+                sleep(1)

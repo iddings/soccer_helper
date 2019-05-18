@@ -62,6 +62,7 @@ class SubmissionTracker:
             reply_lines = []
 
             for link in links:
+                log.info(f"{link.url}")
                 if link.is_mirrorable:
                     existing_mirror: Mirror = session.query(Mirror).filter_by(original_url=link.url).first()
                     title = link.text.replace("*", "")
