@@ -22,6 +22,8 @@ class Config:
     upload_window: timedelta
     reply_delete_threshold: int
 
+    max_download_retries: int = 5
+
     database_uri: str = 'sqlite:////dev/shm/soccer_helper.db'
 
     @staticmethod

@@ -1,5 +1,6 @@
 from multiprocessing import Process
 import logging
+from typing import Dict
 
 from soccer_helper.submission_tracker import SubmissionTracker
 from soccer_helper.config import Config
@@ -8,7 +9,7 @@ from soccer_helper.models import Base
 from soccer_helper.subreddit_tracker import SubredditTracker
 from soccer_helper.video_handler import VideoHandler
 
-root = logging.getLogger(__name__)
+log = logging.getLogger(__name__)
 handler = logging.StreamHandler()
 handler.setFormatter(
     logging.Formatter(
@@ -16,7 +17,7 @@ handler.setFormatter(
         datefmt='%Y-%m-%d %H:%M:%S'
     )
 )
-root.addHandler(handler)
+log.addHandler(handler)
 
 
 class SoccerHelper:
@@ -30,17 +31,28 @@ class SoccerHelper:
 
         Base.metadata.create_all(context.data_store.engine)
 
-        #original_sigint_handler = signal.signal(signal.SIGINT, signal.SIG_IGN)
+        process_targets = {
+            "subreddit_tracker": SubredditTracker(context).track,
+            "submission_tracker": SubmissionTracker(context).track,
+            "video_handler": VideoHandler(context).run
+        }
 
-        submission_tracker_proc = Process(target=SubmissionTracker(context).track)
-        video_handler_proc = Process(target=VideoHandler(context).run)
+        processes: Dict[str, Process] = {k: Process(target=v) for k, v in process_targets.items()}
 
-        submission_tracker_proc.start()
-        video_handler_proc.start()
+        for name, proc in processes.items():
+            log.info(f"starting process: {name}")
+            proc.start()
 
-        #signal.signal(signal.SIGINT, original_sigint_handler)
+        while True:
 
-        SubredditTracker(context).track()
+            try:
 
-        submission_tracker_proc.join()
-        video_handler_proc.join()
+                for name in processes:
+                    if not processes[name].is_alive():
+                        log.info(f"process {name} died. restarting.")
+                        processes[name] = Process(target=process_targets[name])
+                        processes[name].start()
+
+            except KeyboardInterrupt:
+                log.info('exiting.')
+                break

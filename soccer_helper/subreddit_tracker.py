@@ -1,5 +1,6 @@
 from datetime import datetime
 from logging import getLogger, Logger
+from time import sleep
 
 from praw.models import Submission
 

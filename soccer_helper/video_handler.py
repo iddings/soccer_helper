@@ -54,13 +54,24 @@ class VideoHandler:
 
             assert mirror
 
-            log.info('attempting to get ' + url)
-
             dm_code = re.search(r'dailymotion.com/video/(.*?)$', url, flags=re.IGNORECASE).group(1)
 
-            res = requests.get(f'https://www.dailymotion.com/embed/video/{dm_code}')
+            success = False
 
-            if res.status_code != 200:
+            for i in range(context.config.max_download_retries):
+
+                try:
+                    log.info('attempting to get ' + url)
+                    res = requests.get(f'https://www.dailymotion.com/embed/video/{dm_code}')
+                except requests.exceptions.BaseHTTPError:
+                    log.exception(f'error downloading video ({i+1}/{context.config.max_download_retries})')
+                    pass
+                else:
+                    if res.status_code == 200:
+                        success = True
+                        break
+
+            if not success:
                 mirror.skip = True
                 context.data_store.mark_updated(mirror)
                 return
