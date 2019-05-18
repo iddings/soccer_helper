@@ -31,7 +31,7 @@ class SubmissionTracker:
 
             with self._context.data_store.get_session() as session:
 
-                for sub in session.query(TrackedSubmission):
+                for sub in session.query(TrackedSubmission).all():
 
                     if sub.track_until <= now:
                         self._context.data_store.enqueue_deletion(sub)
