@@ -31,7 +31,7 @@ class SubmissionTracker:
 
             with self._context.data_store.get_session() as session:
 
-                for sub in session.query(TrackedSubmission).all():
+                for sub in session.query(TrackedSubmission).order_by(TrackedSubmission.added.desc()).all():
 
                     if sub.track_until <= now:
                         self._context.data_store.enqueue_deletion(sub)
@@ -45,6 +45,7 @@ class SubmissionTracker:
                                 break
 
                     if sub.related_comment_id:
+                        log.info(f"checking {make_permalink(sub)}")
                         self.poll_automod_comment(session, sub)
 
             sleep(1)
@@ -55,8 +56,6 @@ class SubmissionTracker:
         automod_comment.refresh()
 
         for comment in automod_comment.replies:  # type: Comment
-
-            log.info(make_permalink(comment))
 
             reply: TrackedComment = session.query(TrackedComment).filter_by(fullname=comment.fullname).first()
 
