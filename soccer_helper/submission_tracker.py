@@ -45,7 +45,7 @@ class SubmissionTracker:
                                 break
 
                     if sub.related_comment_id:
-                        log.info(f"checking {make_permalink(sub)}")
+                        log.info(f"checking https://reddit.com/r/{self._context.config.subreddit}/{sub.id}")
                         self.poll_automod_comment(session, sub)
 
             sleep(1)
